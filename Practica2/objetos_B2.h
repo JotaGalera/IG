@@ -89,6 +89,8 @@ class _rotacion: public _triangulos3D
 public:
        _rotacion();
 void  parametros(vector<_vertex3f> perfil1, int num1);
+void  tapas(vector<_vertex3f> perfil1, int num1);
+
 
 vector<_vertex3f> perfil;
 int num;
@@ -102,11 +104,14 @@ int num;
 class _cilindro: public _rotacion
 {
 public:
+	int num_r;
+	_vertex3f aux;
+	//vector<_vertex3f> perfil;
+
 		_cilindro(float al,float r,int num);
 
-		int num_r;
-		_vertex3f aux;
-		vector<_vertex3f> perfil;
+		void completeCilindo(vector<_vertex3f> perfil, int num_r);
+
 };
 
 //************************************************************************
@@ -116,13 +121,15 @@ public:
 class _cono: public _rotacion
 {
 public:
+	int num_r;
+  _vertex3f aux;
+  //vector<_vertex3f> perfil;
+
 
   _cono(float al,float r,int num);
 
+	void completeCono(vector<_vertex3f> perfil, int num_r,float al);
 
-	int num_r;
-  _vertex3f aux;
-  vector<_vertex3f> perfil;
 };
 
 //************************************************************************
@@ -132,12 +139,13 @@ public:
 class _esfera: public _rotacion
 {
 public:
-
-  _esfera(float r,int num);
-
-
 	int num_r;
 	float alfa;
   _vertex3f aux;
-  vector<_vertex3f> perfil;
+  //vector<_vertex3f> perfil;
+
+  _esfera(float r,int num);
+
+	void completeEsfera(vector<_vertex3f> perfil, int num_r, int r);
+
 };

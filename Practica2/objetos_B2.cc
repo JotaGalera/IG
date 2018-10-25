@@ -183,13 +183,17 @@ caras[5]._0=3;caras[5]._1=2;caras[5]._2=1;
 _cilindro::_cilindro(float al,float r,int num)
 {
 
-	aux.x=r; aux.y=al; aux.z=0;
-	perfil.push_back(aux);
 	aux.x=r; aux.y=-al; aux.z=0;
 	perfil.push_back(aux);
+	aux.x=r; aux.y=al; aux.z=0;
+	perfil.push_back(aux);
+
 
 	num_r = num;
 	_rotacion::parametros(perfil,num_r);
+	_rotacion::tapas(perfil,num_r);
+
+
 }
 
 //*************************************************************************
@@ -197,26 +201,57 @@ _cilindro::_cilindro(float al,float r,int num)
 //*************************************************************************
 _cono::_cono(float al, float r,int num)
 {
-
-	aux.x=r; aux.y=0.0; aux.z=0.0;
-	perfil.push_back(aux);
-	aux.x=0.0; aux.y=al; aux.z=0.0;
+	aux.x=r; aux.y=(-al/2); aux.z=0.0;
 	perfil.push_back(aux);
 
 	num_r = num;
 
 	_rotacion::parametros(perfil,num_r);
+	completeCono(perfil,num_r,al);
 }
+
+
+void _cono::completeCono(vector<_vertex3f> perfil, int num_r, float al){
+		int i,j;
+		_vertex3i cara_aux;
+		_vertex3f verticeUp,centerDOWN;
+
+		//tapa inferior
+		if(fabs(perfil[0].x)>0.0){
+			centerDOWN.x=0.0;
+			centerDOWN.z=0.0;
+			centerDOWN.y=perfil[0].y;
+			vertices.push_back(centerDOWN);
+				for(i=0; i<num_r*perfil.size();i+=perfil.size()){
+					cara_aux._0=i;
+					cara_aux._1=(perfil.size()*num_r);
+					cara_aux._2=(i+perfil.size())%(num_r*perfil.size());
+					caras.push_back(cara_aux);
+				}
+		}
+		//tapa superior
+		if(fabs(perfil[perfil.size()-1].x>0.0)){
+			verticeUp.x=0.0;
+			verticeUp.y=al/2;
+			verticeUp.z=0.0;
+			vertices.push_back(verticeUp);
+			for(i=0; i < num_r*perfil.size() ; i+=perfil.size()){
+				cara_aux._0=i;
+				cara_aux._1=(perfil.size()*num_r+1);
+				cara_aux._2=(i+perfil.size())%(num_r*perfil.size());
+				caras.push_back(cara_aux);
+			}
+		}
+
+}
+
 
 //*************************************************************************
 // clase esfera
 //*************************************************************************
 _esfera::_esfera(float r,int num)
 {
-	aux.x=0.0;
-	aux.y=-r;
-	aux.z=0.0;
-	perfil.push_back(aux);
+
 
 	for(int i=1; i<=num ; i++){
 		alfa = -(M_PI/2) + (i*M_PI/(num+1));
@@ -225,14 +260,48 @@ _esfera::_esfera(float r,int num)
 		aux.z=0.0;
 		perfil.push_back(aux);
 	}
-	aux.x=0.0;
-	aux.y=r;
-	aux.z=0.0;
-	perfil.push_back(aux);
+
 	num_r = num;
 
 	_rotacion::parametros(perfil,num_r);
+	completeEsfera(perfil,num_r,r);
 }
+
+void _esfera::completeEsfera(vector<_vertex3f> perfil, int num_r,int r){
+		int i,j;
+		_vertex3i cara_aux;
+		_vertex3f centerUP,centerDOWN;
+
+
+		//tapa inferior
+		if(fabs(perfil[0].x)>0.0){
+			centerDOWN.x=0.0;
+			centerDOWN.z=0.0;
+			centerDOWN.y=-r;
+			vertices.push_back(centerDOWN);
+				for(i=0; i<num_r*perfil.size();i+=perfil.size()){
+					cara_aux._0=i;
+					cara_aux._1=(perfil.size()*num_r);
+					cara_aux._2=(i+perfil.size())%(num_r*perfil.size());
+					caras.push_back(cara_aux);
+				}
+		}
+		//tapa superior
+		if(fabs(perfil[perfil.size()-1].x>0.0)){
+			centerUP.x=0.0;
+			centerUP.z=0.0;
+			centerUP.y=r;
+			vertices.push_back(centerUP);
+			for(i=perfil.size()-1;i<num_r*perfil.size();i+=perfil.size()){
+				cara_aux._0=i;
+				cara_aux._1=(perfil.size()*num_r+1);
+				cara_aux._2=(i+perfil.size())%(num_r*perfil.size());
+				caras.push_back(cara_aux);
+			}
+		}
+
+}
+
 
 
 //*************************************************************************
@@ -307,11 +376,12 @@ int i,j;
 _vertex3f vertice_aux;
 _vertex3i cara_aux;
 int num_aux;
-_vertex3f centerUP,centerDOWN;
+//_vertex3f centerUP,centerDOWN;
 // tratamiento de los vértice
 
 num_aux=perfil.size();
-vertices.resize(num_aux*num+2);
+vertices.resize((num_aux*num));
+
 for (j=0;j<num;j++)
   {for (i=0;i<num_aux;i++)
      {
@@ -327,63 +397,49 @@ for (j=0;j<num;j++)
 // tratamiento de las caras
 
 for (j=0;j<num;j++)
-  {for (i=0;i<num_aux-1;i++)
-     {cara_aux._0=i+((j+1)%num)*num_aux;
-      cara_aux._1=i+1+((j+1)%num)*num_aux;
-      cara_aux._2=i+1+j*num_aux;
+  {for (i=0;i<num_aux-1;i++)								//Primera vuelta    1------3
+     {cara_aux._0=i+((j+1)%num)*num_aux;		// valor= 2					|	\	  |
+      cara_aux._1=i+1+((j+1)%num)*num_aux;  // valor= 3         |		\ |
+      cara_aux._2=i+1+j*num_aux;						// valor= 1					0-----2
       caras.push_back(cara_aux);
 
-      cara_aux._0=i+1+j*num_aux;
-      cara_aux._1=i+j*num_aux;
-      cara_aux._2=i+((j+1)%num)*num_aux;
+      cara_aux._0=i+1+j*num_aux;						// valor= 1
+      cara_aux._1=i+j*num_aux;							// valor= 0
+      cara_aux._2=i+((j+1)%num)*num_aux;    // valor= 2
       caras.push_back(cara_aux);
      }
   }
+}
 
- // tapa inferior
-if (fabs(perfil[0].x)>0.0 )
-  {
+void _rotacion::tapas(vector<_vertex3f> perfil, int num){
+	int i,j;
+	_vertex3i cara_aux;
+	_vertex3f centerDOWN,centerUP;
 
-			centerDOWN.x=0.0; centerDOWN.y=perfil[0].y; centerDOWN.z=0.0;
-			vertices[num_aux*num] = centerDOWN;
-
-
-			for (j=0;j<num;j++)
-			  {
-					for (i=0;i<num_aux-1;i++)
-					{
-					 cara_aux._0=vertices.size()-2;
-		       cara_aux._1=i+j*num_aux;
-		       cara_aux._2=i+((j+1)%num)*num_aux;
-		       caras.push_back(cara_aux);
-					 //if(vertices[i+j*num_aux].y == centerDOWN.y && vertices[i+((j+1)%num)*num_aux].y == centerDOWN.y)
-					 	//caras.push_back(cara_aux);
-
-					}
-
-				}
-
-  }
-
- // tapa superior
- if (fabs(perfil[num_aux-1].x)>0.0)
-  {
-
-			centerUP.x=0.0; centerUP.y=perfil[num_aux-1].y; centerUP.z=0.0;
-			vertices.push_back(centerUP);
-
-
-			for (j=0;j<num;j++)
-				{for (i=0;i<num_aux-1;i++)
-					 {cara_aux._0=vertices.size()-1;
-						cara_aux._1=i+1+((j+1)%num)*num_aux;
-						cara_aux._2=i+1+j*num_aux;
-						caras.push_back(cara_aux);
-						//if(vertices[i+1+((j+1)%num)*num_aux].y == centerUP.y && vertices[i+1+j*num_aux].y == centerUP.y)
-							//caras.push_back(cara_aux);
-
-					 }
-				}
-
+	//tapa inferior
+	if(fabs(perfil[0].x)>0.0){
+		centerDOWN.x=0.0;
+		centerDOWN.z=0.0;
+		centerDOWN.y=perfil[0].y;
+		vertices.push_back(centerDOWN);
+			for(i=0; i<num*perfil.size();i+=perfil.size()){
+				cara_aux._0=i;
+				cara_aux._1=(perfil.size()*num);
+				cara_aux._2=(i+perfil.size())%(num*perfil.size());
+				caras.push_back(cara_aux);
+			}
+	}
+	//tapa superior
+	if(fabs(perfil[perfil.size()-1].x>0.0)){
+		centerUP.x=0.0;
+		centerUP.z=0.0;
+		centerUP.y=perfil[perfil.size()-1].y;
+		vertices.push_back(centerUP);
+		for(i=perfil.size()-1;i<num*perfil.size();i+=perfil.size()){
+			cara_aux._0=i;
+			cara_aux._1=(perfil.size()*num+1);
+			cara_aux._2=(i+perfil.size())%(num*perfil.size());
+			caras.push_back(cara_aux);
+		}
 	}
 }

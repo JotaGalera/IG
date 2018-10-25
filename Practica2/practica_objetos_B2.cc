@@ -32,10 +32,11 @@ int Window_x=50,Window_y=50,Window_width=450,Window_high=450;
 _cubo cubo;
 _piramide piramide(0.85,1.3);
 _objeto_ply  ply;
-_cilindro cilindro(1,1,10);
-_cono cono(1,1,18);
-_esfera esfera(1,10);
 _rotacion rotacion;
+_cilindro cilindro(1,1,10);
+_cono cono(1,1,6);
+_esfera esfera(1,10);
+
 
 // _objeto_ply *ply1;
 
@@ -60,7 +61,6 @@ void change_projection()
 
 glMatrixMode(GL_PROJECTION);
 glLoadIdentity();
-
 // formato(x_minimo,x_maximo, y_minimo, y_maximo,plano_delantero, plano_traser)
 //  plano_delantero>0  plano_trasero>PlanoDelantero)
 glFrustum(-Size_x,Size_x,-Size_y,Size_y,Front_plane,Back_plane);
@@ -115,12 +115,12 @@ void draw_objects()
 {
 
 switch (t_objeto){
-	case CUBO: cubo.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
-	case PIRAMIDE: piramide.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
-        case OBJETO_PLY: ply.draw(modo,1.0,0.6,0.0,0.0,1.0,0.3,2);break;
-        case ROTACION: rotacion.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
-				case CILINDRO: cilindro.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
-				case CONO: cono.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
+	case CUBO: cubo.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,5);break;
+	case PIRAMIDE: piramide.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,5);break;
+        case OBJETO_PLY: ply.draw(modo,1.0,0.6,0.0,0.0,1.0,0.3,5);break;
+        case ROTACION: rotacion.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,5);break;
+				case CILINDRO: cilindro.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,5);break;
+				case CONO: cono.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,20);break;
 				case ESFERA: esfera.draw(modo,1.0,0.0,0.0,0.0,1.0,0.0,2);break;
 
 	}
@@ -264,6 +264,7 @@ int main(int argc, char *argv[] )
 
 
 
+
 // perfil
 
 vector<_vertex3f> perfil2;
@@ -271,10 +272,10 @@ _vertex3f aux;
 
 
 //Cilindro
-aux.x=1.0; aux.y=-1.0; aux.z=0.0;
-perfil2.push_back(aux);
-aux.x=1.0; aux.y=1.0; aux.z=0.0;
-perfil2.push_back(aux);
+//aux.x=1.0; aux.y=-1.0; aux.z=0.0;
+//perfil2.push_back(aux);
+//aux.x=1.0; aux.y=1.0; aux.z=0.0;
+//perfil2.push_back(aux);
 
 
 //Cono
@@ -284,7 +285,7 @@ aux.x=1.0; aux.y=-1.0; aux.z=0.0;
 perfil2.push_back(aux);*/
 
 
-rotacion.parametros(perfil2,18);
+//rotacion.parametros(perfil2,18);
 /*aux.x=1.0;aux.y=-1.4;aux.z=0.0;
 perfil2.push_back(aux);
 aux.x=1.0;aux.y=-1.1;aux.z=0.0;
