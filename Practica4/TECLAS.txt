@@ -1,0 +1,8 @@
+Seleccionar una figura, por ejemplo la esfera, tecla "e".
+
+Iluminacion plana: 5
+Iluminaciion suave: 6
+
+Para crear una luz , la cual moveremos, pulsar F1.
+
+Para rotar la luz en horizontal F12 y F11. Y en vertical F9 y F10.
